@@ -119,7 +119,7 @@ h1 {
     display: none; background: #fffdf9; color: #2c1a1d; padding: 35px;
     border-radius: 2px; width: 90%; max-width: 400px; box-shadow: 0 15px 50px rgba(0,0,0,0.7);
     font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; text-align: left;
-    border-left: 5px solid var(--rose-petal); z-index: 120;
+    border-left: 5px solid var(--rose-petal); z-index: 1000;
     transform-origin: top center;
 }
 .unfold-animation { animation: unfold 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
@@ -207,18 +207,23 @@ h1 {
     .maze-controls { display: none; } 
 }
 
-/* --- FIX MOBILE OVERLAP --- */
-/* Remonte le contenu de la page 4 pour laisser place aux bougies */
-@media (max-height: 850px), (max-width: 600px) {
-    #p4 {
-        padding-bottom: 140px; /* Espace réservé pour les bougies en bas */
+/* --- FIX MOBILE ULTIME --- */
+@media (max-width: 600px) {
+    #p4 h1 {
+        font-size: 2.2rem !important;
+        margin-top: -60px !important;
     }
     #letter-btn {
-        position: relative;
-        z-index: 200; /* Assure que le bouton est cliquable au-dessus des bougies */
+        position: fixed !important;
+        bottom: 22vh !important; /* On le remonte à 22% de la hauteur de l'écran */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 9999 !important; /* Priorité absolue sur les bougies */
+        width: 80% !important;
+        max-width: 260px !important;
+        margin: 0 !important;
     }
-    #final-icon {
-        margin: 5px 0; /* Réduit un peu l'espacement du cœur */
-        font-size: 60px;
+    .candle-container {
+        bottom: 5vh !important;
     }
 }

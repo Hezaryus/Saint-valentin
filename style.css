@@ -1,0 +1,201 @@
+:root {
+    --bg-deep: #0a0204;
+    --bg-accent: #2d0a10;
+    --bg-violet: #16081a;
+    --text-gold: #e6cfa8;
+    --rose-petal: #a4131f;
+    --glass: rgba(255, 255, 255, 0.07);
+    --maze-bg: #ffe4e6;
+    --maze-wall: #be123c;
+    --maze-path: #fff1f2;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--bg-deep), var(--bg-accent), var(--bg-violet), var(--bg-deep));
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+    color: var(--text-gold);
+    overflow: hidden;
+    height: 100dvh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- LOADER --- */
+#loading-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-deep); z-index: 1000;
+    display: flex; justify-content: center; align-items: center;
+    transition: opacity 0.8s ease;
+}
+.loader-content { text-align: center; }
+.spinner { 
+    font-size: 3rem; margin-top: 20px; 
+    animation: pulse 1s infinite; 
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+h1 {
+    background: linear-gradient(to right, #e6cfa8, #ff0055, #e6cfa8);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite;
+}
+@keyframes shine { to { background-position: 200% center; } }
+
+#star-field {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 5; opacity: 0; transition: opacity 2s ease;
+    pointer-events: none;
+}
+.bg-star, .star { 
+    position: absolute; 
+    background: white; 
+    border-radius: 50%; 
+    animation: twinkle var(--duration) infinite ease-in-out;
+}
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.nav-btn {
+    background: var(--glass);
+    backdrop-filter: blur(5px);
+    color: var(--text-gold);
+    border: 1px solid rgba(230, 207, 168, 0.3);
+    padding: 15px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 20px;
+}
+.nav-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--rose-petal); }
+
+.candle-container {
+    position: fixed; bottom: 8vh; width: 100%; z-index: 110;
+    display: flex; flex-direction: column; align-items: center; transition: opacity 0.8s ease;
+}
+.candles-row { display: flex; align-items: flex-end; justify-content: center; gap: 30px; }
+.candle { position: relative; cursor: pointer; }
+.wax { width: 22px; background: linear-gradient(to right, #e0d5d5, #f5f5f5, #b3a7a7); border-radius: 4px; }
+.flame {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    width: 16px; height: 26px; top: -24px;
+    background: radial-gradient(ellipse at bottom, #fff 10%, #ffaa00 50%, #ff5500 90%);
+    border-radius: 50% 50% 35% 35%; filter: drop-shadow(0 0 10px #ffaa00);
+    transition: opacity 0.3s, transform 0.1s; transform-origin: bottom center;
+}
+.candle.off .flame { opacity: 0; transform: translateX(-50%) scale(0) !important; }
+
+#letter {
+    display: none; background: #fffdf9; color: #2c1a1d; padding: 35px;
+    border-radius: 2px; width: 90%; max-width: 400px; box-shadow: 0 15px 50px rgba(0,0,0,0.7);
+    font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; text-align: left;
+    border-left: 5px solid var(--rose-petal); z-index: 120;
+    transform-origin: top center;
+}
+.unfold-animation { animation: unfold 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+@keyframes unfold { 0% { transform: scaleY(0.1); opacity: 0; } 100% { transform: scaleY(1); opacity: 1; } }
+.fold-animation { animation: fold 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+@keyframes fold { 0% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(0.1); opacity: 0; } }
+
+.close-letter {
+    display: block; margin: 20px auto 0; padding: 8px 20px;
+    background: var(--rose-petal); color: white; border: none;
+    border-radius: 20px; font-family: 'Poppins'; cursor: pointer;
+    font-size: 0.8rem; transition: 0.3s;
+}
+
+.page {
+    position: absolute; width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; text-align: center; opacity: 0; transform: translateY(30px);
+    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); pointer-events: none; z-index: 10;
+}
+.page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+.page.blur-effect { filter: blur(10px) brightness(0.4); }
+
+.controls-top {
+    position: fixed; top: calc(20px + env(safe-area-inset-top)); right: 20px; 
+    z-index: 150; display: flex; gap: 15px;
+}
+.music-control { cursor: pointer; font-size: 1.5rem; opacity: 0.6; transition: opacity 0.3s; }
+.tap-heart { position: fixed; font-size: 1.5rem; pointer-events: none; z-index: 200; animation: heartFloat 1.2s forwards; }
+@keyframes heartFloat { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
+
+#scratch-container {
+    position: relative; width: 280px; height: 150px; margin: 20px auto;
+    border-radius: 10px; overflow: hidden; display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+#scratch-canvas { position: absolute; top: 0; left: 0; z-index: 2; cursor: crosshair; }
+
+/* REVENU AU STYLE TEXTE (PLUS DE PHOTO) */
+.scratch-reveal { 
+    width: 100%; height: 100%; 
+    background: #fff; /* Fond clair */
+    color: var(--rose-petal);
+    display: flex; align-items: center; justify-content: center; 
+    font-family: 'Dancing Script'; 
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+#maze-wrapper {
+    background: white; padding: 10px; border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+h2.maze-title { color: var(--maze-wall); margin: 5px 0 10px 0; font-size: 1.2rem; text-align: center; font-family: Arial, sans-serif; }
+#game-board { background: #fff; padding: 5px; border-radius: 10px; }
+#maze { display: grid; gap: 1px; background-color: var(--maze-path); }
+.cell { width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 16px; border-radius: 2px; }
+.wall { background-color: var(--maze-wall); }
+.path { background-color: var(--maze-path); }
+.player { font-size: 18px; z-index: 2; animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+/* Contrôles mobiles */
+.maze-controls { 
+    margin-top: 25px; 
+    margin-bottom: 40px; 
+    display: grid; 
+    grid-template-columns: 60px 60px 60px; 
+    grid-template-rows: 50px 50px; 
+    gap: 15px; 
+    justify-content: center;
+}
+.d-btn { background: white; border: 2px solid var(--maze-wall); border-radius: 12px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; color: var(--maze-wall); touch-action: manipulation; cursor: pointer; }
+.d-btn:active { background: var(--maze-path); transform: scale(0.95); }
+
+#scene-container {
+    width: 100%; height: 100%; border: none; border-radius: 10px;
+    display: none; position: absolute; top:0; left:0; z-index: 20;
+}
+
+.restart-btn {
+    display: block; margin: 15px auto 0; padding: 8px 20px;
+    background: transparent; color: var(--rose-petal); border: 1px solid var(--rose-petal);
+    border-radius: 20px; font-family: 'Poppins'; cursor: pointer;
+    font-size: 0.7rem; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+}
+.restart-btn:hover { background: rgba(164, 19, 31, 0.1); transform: scale(1.05); }
+
+@media (min-width: 600px) { 
+    .cell { width: 35px; height: 35px; } 
+    .maze-controls { display: none; } 
+}

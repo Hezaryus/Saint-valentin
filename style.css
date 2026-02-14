@@ -4,16 +4,9 @@
     --bg-violet: #16081a;
     --text-gold: #e6cfa8;
     --rose-petal: #a4131f;
-    --glass: rgba(255, 255, 255, 0.07);
-    --maze-bg: #ffe4e6;
-    --maze-wall: #be123c;
-    --maze-path: #fff1f2;
 }
 
-* { 
-    box-sizing: border-box; 
-    -webkit-tap-highlight-color: transparent; 
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
 body {
     margin: 0;
@@ -23,24 +16,10 @@ body {
     animation: gradientAnimation 15s ease infinite;
     color: var(--text-gold);
     overflow: hidden;
-    height: 100dvh; 
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
-    touch-action: none;
-}
-
-/* --- LOADER --- */
-#loading-screen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--bg-deep); z-index: 1000;
-    display: flex; justify-content: center; align-items: center;
-    transition: opacity 0.8s ease;
-}
-.loader-content { text-align: center; }
-.spinner { 
-    font-size: 3rem; margin-top: 20px; 
-    animation: pulse 1s infinite; 
 }
 
 @keyframes gradientAnimation {
@@ -49,181 +28,109 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-h1 {
-    background: linear-gradient(to right, #e6cfa8, #ff0055, #e6cfa8);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 4s linear infinite;
-}
-@keyframes shine { to { background-position: 200% center; } }
-
-#star-field {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 5; opacity: 0; transition: opacity 2s ease;
+/* --- STRUCTURE DES PAGES --- */
+.page {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100; /* Priorité sur les bougies */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    opacity: 0;
     pointer-events: none;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    transform: translateY(20px);
 }
-.bg-star { 
-    position: absolute; 
-    background: white; 
-    border-radius: 50%; 
-    animation: twinkle var(--duration) infinite ease-in-out;
-}
-@keyframes twinkle {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
-}
+.page.active { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+/* --- ÉLÉMENTS FIXES --- */
+#star-field { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+#dark-overlay { position: fixed; inset: 0; z-index: 2; pointer-events: none; background: #000; opacity: 0; transition: 1.5s; }
+.controls-top { position: fixed; top: 20px; right: 20px; z-index: 300; }
+#secret-msg { position: fixed; top: 35%; width: 90%; text-align: center; z-index: 150; pointer-events: none; opacity: 0; font-family: 'Dancing Script'; font-size: 2.2rem; transition: 2s; }
 
 /* --- BOUTONS --- */
 .nav-btn {
-    position: relative;
-    z-index: 50; 
-    background: var(--glass);
-    backdrop-filter: blur(5px);
-    color: var(--text-gold);
-    border: 1px solid rgba(230, 207, 168, 0.3);
-    padding: 15px 40px;
+    background: var(--rose-petal);
+    color: white;
+    border: none;
+    padding: 16px 35px;
     border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     font-size: 0.9rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 20px;
-    touch-action: manipulation;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    transition: transform 0.2s;
 }
-.nav-btn:hover, .nav-btn:active { 
-    transform: scale(1.05); 
-    box-shadow: 0 0 15px var(--rose-petal); 
-}
+.nav-btn:active { transform: scale(0.95); }
 
 /* --- BOUGIES --- */
 .candle-container {
-    position: fixed; bottom: 8vh; width: 100%; z-index: 110;
-    display: flex; flex-direction: column; align-items: center; transition: opacity 0.8s ease;
+    position: fixed;
+    bottom: 5vh;
+    width: 100%;
+    z-index: 50; /* Sous les pages par défaut */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 1s;
+    pointer-events: none; /* Ne bloque pas le clic des boutons au-dessus */
 }
-.candles-row { display: flex; align-items: flex-end; justify-content: center; gap: 30px; }
+.candle-container.active-blow { pointer-events: all; z-index: 150; }
+
+.candles-row { display: flex; align-items: flex-end; gap: 30px; }
 .candle { position: relative; cursor: pointer; }
-.wax { width: 22px; background: linear-gradient(to right, #e0d5d5, #f5f5f5, #b3a7a7); border-radius: 4px; }
-.flame {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    width: 16px; height: 26px; top: -24px;
-    background: radial-gradient(ellipse at bottom, #fff 10%, #ffaa00 50%, #ff5500 90%);
-    border-radius: 50% 50% 35% 35%; filter: drop-shadow(0 0 10px #ffaa00);
-    transition: opacity 0.3s, transform 0.1s; transform-origin: bottom center;
-}
-.candle.off .flame { opacity: 0; transform: translateX(-50%) scale(0) !important; }
+.wax { width: 22px; background: linear-gradient(to right, #ddd, #fff, #bbb); border-radius: 4px; }
+.flame { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 15px; height: 25px; background: radial-gradient(#fff, #ffaa00, #ff5500); border-radius: 50% 50% 30% 30%; filter: drop-shadow(0 0 8px #ffaa00); animation: flicker 0.1s infinite alternate; }
+@keyframes flicker { to { transform: translateX(-50%) scale(1.1) rotate(2deg); } }
+.candle.off .flame { display: none; }
 
-/* --- LETTRE --- */
-#letter {
-    display: none; background: #fffdf9; color: #2c1a1d; padding: 35px;
-    border-radius: 2px; width: 90%; max-width: 400px; box-shadow: 0 15px 50px rgba(0,0,0,0.7);
-    font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; text-align: left;
-    border-left: 5px solid var(--rose-petal); z-index: 1000;
-    transform-origin: top center;
-}
-.unfold-animation { animation: unfold 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-@keyframes unfold { 0% { transform: scaleY(0.1); opacity: 0; } 100% { transform: scaleY(1); opacity: 1; } }
-
-.close-letter {
-    display: block; margin: 20px auto 0; padding: 8px 20px;
-    background: var(--rose-petal); color: white; border: none;
-    border-radius: 20px; font-family: 'Poppins'; cursor: pointer;
-}
-
-/* --- PAGES --- */
-.page {
-    position: absolute; width: 100%; height: 100%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px; text-align: center; opacity: 0; transform: translateY(30px);
-    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); pointer-events: none; z-index: 10;
-}
-.page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
-.page.blur-effect { filter: blur(10px) brightness(0.4); }
-
-/* --- CONTROLES --- */
-.controls-top {
-    position: fixed; top: calc(20px + env(safe-area-inset-top)); right: 20px; 
-    z-index: 150; display: flex; gap: 15px;
-}
-.music-control { cursor: pointer; font-size: 1.5rem; opacity: 0.6; }
+/* --- LOADER --- */
+#loading-screen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-size: 3rem; transition: 0.5s; }
 
 /* --- GRATTAGE --- */
-#scratch-container {
-    position: relative; width: 280px; height: 150px; margin: 20px auto;
-    border-radius: 10px; overflow: hidden; display: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    background: #fff;
-}
-#scratch-canvas { 
-    position: absolute; top: 0; left: 0; z-index: 2; 
-    cursor: crosshair;
-    touch-action: none;
-}
-.scratch-reveal { 
-    width: 100%; height: 100%; 
-    display: flex; align-items: center; justify-content: center; 
-    font-family: 'Dancing Script'; font-size: 1.8rem; font-weight: bold;
-    color: var(--rose-petal);
-}
+#scratch-container { position: relative; width: 280px; height: 140px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; }
+#scratch-canvas { position: absolute; top: 0; left: 0; touch-action: none; cursor: crosshair; }
+.scratch-reveal { height: 100%; display: flex; align-items: center; justify-content: center; color: var(--rose-petal); font-family: 'Dancing Script'; font-size: 1.8rem; font-weight: bold; }
 
 /* --- LABYRINTHE --- */
-#game-board { background: #fff; padding: 5px; border-radius: 10px; }
-#maze { display: grid; gap: 1px; background-color: var(--maze-path); }
-.cell { width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.wall { background-color: var(--maze-wall); border-radius: 2px; }
-.path { background-color: var(--maze-path); }
-.player { font-size: 18px; z-index: 2; animation: pulse 1s infinite; }
+#maze { display: grid; gap: 1px; background: var(--rose-petal); padding: 3px; border-radius: 8px; margin: 15px 0; }
+.cell { width: 32px; height: 32px; background: #fff; display: flex; align-items: center; justify-content: center; }
+.wall { background: transparent; }
+.maze-controls { display: grid; grid-template-columns: repeat(3, 65px); gap: 12px; margin-top: 20px; }
+.d-btn { height: 55px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 0 #ccc; cursor: pointer; color: #333; }
+.d-btn:active { transform: translateY(3px); box-shadow: none; }
 
-.maze-controls { 
-    margin-top: 25px; 
-    display: grid; 
-    grid-template-columns: 60px 60px 60px; 
-    grid-template-rows: 50px 50px; 
-    gap: 15px; 
-    justify-content: center;
-}
-.d-btn { 
-    background: white; border: 2px solid var(--maze-wall); border-radius: 12px; 
-    font-size: 1.5rem; display: flex; align-items: center; justify-content: center; 
-    color: var(--maze-wall); touch-action: manipulation; cursor: pointer; 
-}
+/* --- LETTRE --- */
+#letter { display: none; background: #fffdf9; color: #2c1a1d; padding: 25px; border-radius: 2px; width: 90%; max-width: 400px; text-align: left; border-left: 5px solid var(--rose-petal); box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 400; position: relative; }
 
-#scene-container {
-    width: 100%; height: 100%; border: none; border-radius: 10px;
-    display: none; position: absolute; top:0; left:0; z-index: 20;
-}
-
-.restart-btn {
-    display: block; margin: 15px auto 0; padding: 8px 20px;
-    background: transparent; color: var(--rose-petal); border: 1px solid var(--rose-petal);
-    border-radius: 20px; font-size: 0.7rem; text-transform: uppercase;
-}
-
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-
-@media (min-width: 600px) { 
-    .cell { width: 35px; height: 35px; } 
-    .maze-controls { display: none; } 
-}
-
-/* --- FIX MOBILE ULTIME --- */
+/* =========================================
+   FIX MOBILE : REMONTE TOUT LE CONTENU
+   ========================================= */
 @media (max-width: 600px) {
-    #p4 h1 {
-        font-size: 2.2rem !important;
-        margin-top: -60px !important;
+    .page {
+        justify-content: flex-start !important; /* Aligne le contenu en haut */
+        padding-top: 12vh !important; /* Marge de sécurité par rapport au haut */
     }
-    #letter-btn {
-        position: fixed !important;
-        bottom: 22vh !important; /* On le remonte à 22% de la hauteur de l'écran */
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        z-index: 9999 !important; /* Priorité absolue sur les bougies */
-        width: 80% !important;
-        max-width: 260px !important;
-        margin: 0 !important;
+
+    h1 { font-size: 2.1rem !important; margin-bottom: 5px; }
+    
+    .cell { width: 28px; height: 28px; } /* Labyrinthe un peu plus petit */
+    
+    .nav-btn {
+        padding: 14px 30px;
+        font-size: 0.85rem;
+        margin-top: 20px;
     }
-    .candle-container {
-        bottom: 5vh !important;
-    }
+
+    #scratch-container { width: 260px; height: 130px; }
 }

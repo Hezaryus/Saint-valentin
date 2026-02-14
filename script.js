@@ -1,5 +1,5 @@
 // --- LOGIQUE GLOBALE ---
-const START_DATE = new Date(2025, 11, 10); // Attention: Mois 11 = Décembre
+const START_DATE = new Date(2025, 11, 10); 
 let audioContext, analyser, dataArray, listeningToBlow = false;
 let isMazeActive = false;
 
@@ -123,6 +123,7 @@ function openLetter() {
     l.style.display = 'block'; 
     l.classList.remove('fold-animation');
     l.classList.add('unfold-animation');
+    // On garde la pluie de pétales de roses à l'ouverture, c'est très joli
     for(let i=0; i<45; i++) setTimeout(createPetal, i*120);
 }
 
@@ -147,16 +148,7 @@ function toggleMusic(e) {
     else { audio.pause(); if(e && e.target) e.target.style.opacity = "0.6"; }
 }
 
-function spawnHeart(e) {
-    // IMPORTANT FIX: Prevent heart spawn on Buttons too
-    if(e.target.closest('#game-board') || e.target.closest('.d-btn') || e.target.closest('#scratch-canvas') || e.target.closest('.nav-btn') || e.target.closest('.candle') || e.target.closest('.music-control')) return;
-    
-    const h = document.createElement('div');
-    h.className = 'tap-heart'; h.innerHTML = '❤️';
-    h.style.left = e.clientX + 'px'; h.style.top = e.clientY + 'px';
-    document.body.appendChild(h);
-    setTimeout(() => h.remove(), 1200);
-}
+// LA FONCTION SPAWNHEART A ÉTÉ SUPPRIMÉE ICI
 
 function startTimer() {
     const timerEl = document.getElementById('timer');
@@ -204,10 +196,8 @@ function initScratch() {
 
     canvas.addEventListener('mousedown', () => isDrawing = true);
     canvas.addEventListener('touchstart', (e) => { isDrawing = true; if(e.cancelable) e.preventDefault(); }, {passive: false});
-    
     window.addEventListener('mouseup', () => isDrawing = false);
     window.addEventListener('touchend', () => isDrawing = false);
-    
     canvas.addEventListener('mousemove', scratch);
     canvas.addEventListener('touchmove', scratch, {passive: false});
 }
@@ -246,8 +236,6 @@ const commonSceneCSS = `
     #action-btn { margin-top: 30px; padding: 18px 50px; background: rgba(255, 255, 255, 0.05); color: white; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(5px); z-index: 20; } 
     .sparkle { position: absolute; pointer-events: none; animation: float-up 2s ease-out forwards; } 
     @keyframes float-up { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; } }
-    
-    /* FIX MOBILE : Emojis plus petits et stage moins haut */
     @media (max-width: 600px) {
         .emoji { font-size: 45px; }
         #stage { height: 350px; }
@@ -266,7 +254,6 @@ const finishScript = `
     }
 `;
 
-// SCÈNE AMOUR
 const htmlAmour = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${commonSceneCSS}</style></head><body> 
 <div id="moon"></div> 
 <div id="stage"> 
@@ -286,11 +273,8 @@ const btn = document.getElementById('action-btn');
 const stage = document.getElementById('stage'); 
 let juliaPos = 10; 
 let finished = false; 
-
-// FIX MOBILE: Limite d'approche réduite (60% au lieu de 75%)
 const LIMIT_POS = window.innerWidth < 600 ? 55 : 75; 
 const STEP = window.innerWidth < 600 ? 6 : 7;
-
 btn.onclick = () => { 
     if (finished) return; 
     if (juliaPos < LIMIT_POS) { 
@@ -323,7 +307,6 @@ function spawnSparkle() {
 } 
 <\/script></body></html>`;
 
-// SCÈNE BANANE
 const htmlBanane = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${commonSceneCSS}</style></head><body> 
 <div id="moon"></div> 
 <div id="stage"> 
@@ -342,11 +325,8 @@ const bubble = document.getElementById('bubble');
 const btn = document.getElementById('action-btn'); 
 let juliaPos = 10; 
 let finished = false; 
-
-// FIX MOBILE
 const LIMIT_POS = window.innerWidth < 600 ? 55 : 75; 
 const STEP = window.innerWidth < 600 ? 5 : 6;
-
 btn.onclick = () => { 
     if (finished) return; 
     if (juliaPos < LIMIT_POS) { 
@@ -357,7 +337,6 @@ btn.onclick = () => {
     } else { 
         finished = true; 
         btn.style.opacity = '0'; 
-        // Le garçon s'approche un peu pour la blague
         boyWrapper.style.right = window.innerWidth < 600 ? '5%' : '2%'; 
         bubble.style.transform = 'translateX(-40px)'; 
         setTimeout(() => { 
@@ -423,15 +402,12 @@ function move(dx, dy) {
         playerPos = { x: nx, y: ny };
         if (nx === 14) {
             document.getElementById('maze-game-wrapper').style.display = 'none';
-            
             let oldIframe = document.getElementById('scene-container');
             if (oldIframe) oldIframe.remove();
-
             const iframe = document.createElement('iframe');
             iframe.id = 'scene-container';
             iframe.style.display = 'block';
             document.getElementById('p-maze').appendChild(iframe);
-
             const sceneContent = (ny === 3) ? htmlBanane : htmlAmour;
             const doc = iframe.contentWindow.document;
             doc.open();
@@ -457,7 +433,6 @@ function restartExperience() {
         p.classList.remove('blur-effect');
     });
     document.getElementById('p1').classList.add('active');
-
     document.querySelectorAll('.candle').forEach(c => c.classList.remove('off'));
     document.getElementById('candles-area').style.opacity = '0';
     document.getElementById('candles-area').style.pointerEvents = 'none';
@@ -465,19 +440,15 @@ function restartExperience() {
     document.getElementById('dark-overlay').style.opacity = '0';
     document.getElementById('secret-msg').style.opacity = '0';
     listeningToBlow = false;
-
     const l = document.getElementById('letter');
     l.style.display = 'none';
     l.classList.remove('unfold-animation', 'fold-animation');
     document.getElementById('letter-btn').style.display = 'inline-block';
     document.getElementById('final-icon').style.display = 'block';
-
     playerPos = { x: 0, y: 4 };
     isMazeActive = false;
     document.getElementById('maze-game-wrapper').style.display = 'block';
-    
     const iframe = document.getElementById('scene-container');
     if (iframe) iframe.remove();
-
     initScratch();
 }

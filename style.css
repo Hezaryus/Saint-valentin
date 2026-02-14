@@ -27,10 +27,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    touch-action: none; /* Empêche le zoom double-tap global */
+    touch-action: none;
 }
 
-/* --- LOADER --- */
 #loading-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: var(--bg-deep); z-index: 1000;
@@ -38,10 +37,7 @@ body {
     transition: opacity 0.8s ease;
 }
 .loader-content { text-align: center; }
-.spinner { 
-    font-size: 3rem; margin-top: 20px; 
-    animation: pulse 1s infinite; 
-}
+.spinner { font-size: 3rem; margin-top: 20px; animation: pulse 1s infinite; }
 
 @keyframes gradientAnimation {
     0% { background-position: 0% 50%; }
@@ -55,7 +51,7 @@ h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: shine 4s linear infinite;
-    padding: 0 10px; /* Évite que le texte touche les bords */
+    text-align: center;
 }
 @keyframes shine { to { background-position: 200% center; } }
 
@@ -65,9 +61,7 @@ h1 {
     pointer-events: none;
 }
 .bg-star { 
-    position: absolute; 
-    background: white; 
-    border-radius: 50%; 
+    position: absolute; background: white; border-radius: 50%; 
     animation: twinkle var(--duration) infinite ease-in-out;
 }
 @keyframes twinkle {
@@ -75,223 +69,63 @@ h1 {
     50% { opacity: 1; transform: scale(1.2); }
 }
 
-/* --- BOUTONS --- */
 .nav-btn {
-    position: relative;
-    z-index: 50; 
-    background: var(--glass);
-    backdrop-filter: blur(5px);
-    color: var(--text-gold);
-    border: 1px solid rgba(230, 207, 168, 0.3);
-    padding: 15px 40px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 20px;
-    touch-action: manipulation;
-}
-.nav-btn:hover, .nav-btn:active { 
-    transform: scale(1.05); 
-    box-shadow: 0 0 15px var(--rose-petal); 
-}
-
-/* --- BOUGIES --- */
-.candle-container {
-    position: fixed; bottom: 8vh; width: 100%; z-index: 110;
-    display: flex; flex-direction: column; align-items: center; transition: opacity 0.8s ease;
-}
-.candles-row { display: flex; align-items: flex-end; justify-content: center; gap: 30px; }
-.candle { position: relative; cursor: pointer; }
-.wax { width: 22px; background: linear-gradient(to right, #e0d5d5, #f5f5f5, #b3a7a7); border-radius: 4px; }
-.flame {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    width: 16px; height: 26px; top: -24px;
-    background: radial-gradient(ellipse at bottom, #fff 10%, #ffaa00 50%, #ff5500 90%);
-    border-radius: 50% 50% 35% 35%; filter: drop-shadow(0 0 10px #ffaa00);
-    transition: opacity 0.3s, transform 0.1s; transform-origin: bottom center;
-}
-.candle.off .flame { opacity: 0; transform: translateX(-50%) scale(0) !important; }
-
-/* --- LETTRE --- */
-#letter {
-    display: none; /* Le JS le passera en flex */
-    flex-direction: column; /* IMPORTANT : Force l'affichage vertical (haut en bas) */
-    background: #fffdf9;
-    color: #2c1a1d;
-    padding: 35px;
-    border-radius: 2px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.7);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.3rem;
-    text-align: left;
-    border-left: 5px solid var(--rose-petal);
-    z-index: 120;
-    transform-origin: top center;
-    max-height: 80vh; /* Garde la lettre scrollable si elle est trop longue sur petit écran */
-    overflow-y: auto;
-}
-.unfold-animation { animation: unfold 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-@keyframes unfold { 0% { transform: scaleY(0.1); opacity: 0; } 100% { transform: scaleY(1); opacity: 1; } }
-
-.close-letter {
-    display: block; margin: 20px auto 0; padding: 8px 20px;
-    background: var(--rose-petal); color: white; border: none;
-    border-radius: 20px; font-family: 'Poppins'; cursor: pointer;
-}
-
-/* --- PAGES --- */
-.page {
-    position: absolute; width: 100%; height: 100%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px; text-align: center; opacity: 0; transform: translateY(30px);
-    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); pointer-events: none; z-index: 10;
-}
-.page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
-.page.blur-effect { filter: blur(10px) brightness(0.4); }
-
-/* --- CONTROLES --- */
-.controls-top {
-    position: fixed; top: calc(20px + env(safe-area-inset-top)); right: 20px; 
-    z-index: 150; display: flex; gap: 15px;
-}
-.music-control { cursor: pointer; font-size: 1.5rem; opacity: 0.6; }
-
-/* --- GRATTAGE --- */
-#scratch-container {
-    position: relative; width: 280px; height: 150px; margin: 20px auto;
-    border-radius: 10px; overflow: hidden; display: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    background: #fff;
-    touch-action: none; /* Crucial pour le grattage mobile */
-}
-#scratch-canvas { 
-    position: absolute; top: 0; left: 0; z-index: 2; 
-    cursor: crosshair;
-}
-.scratch-reveal { 
-    width: 100%; height: 100%; 
-    display: flex; align-items: center; justify-content: center; 
-    font-family: 'Dancing Script'; font-size: 1.8rem; font-weight: bold;
-    color: var(--rose-petal);
+    position: relative; z-index: 50; 
+    background: var(--glass); backdrop-filter: blur(5px);
+    color: var(--text-gold); border: 1px solid rgba(230, 207, 168, 0.3);
+    padding: 15px 40px; border-radius: 50px; cursor: pointer;
+    transition: all 0.3s ease; font-size: 0.9rem;
+    text-transform: uppercase; letter-spacing: 2px; margin-top: 20px;
 }
 
 /* --- LABYRINTHE --- */
 #game-board { 
-    background: #fff; 
-    padding: 5px; 
-    border-radius: 10px; 
-    /* Max width pour desktop */
-    max-width: 600px;
-    margin: 0 auto;
+    background: #fff; padding: 5px; border-radius: 10px; 
+    width: 95vw; max-width: 500px; margin: 0 auto;
 }
-
 #maze { 
-    display: grid; 
-    gap: 1px; 
-    background-color: var(--maze-path);
-    /* Width 100% permet aux colonnes (1fr) de s'adapter au parent */
-    width: 100%;
+    display: grid; gap: 1px; background-color: var(--maze-path); width: 100%;
 }
-
 .cell { 
-    /* Suppression des tailles fixes par défaut, on laisse le grid gérer */
-    width: 35px; 
-    height: 35px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-size: 16px; 
+    aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; 
 }
 .wall { background-color: var(--maze-wall); border-radius: 2px; }
 .path { background-color: var(--maze-path); }
-.player { font-size: 18px; z-index: 2; animation: pulse 1s infinite; }
+.player { font-size: 1.2rem; z-index: 2; animation: pulse 1s infinite; }
 
 .maze-controls { 
-    margin-top: 20px; 
-    display: none; 
-    grid-template-columns: repeat(3, 1fr); 
-    grid-template-rows: auto auto; 
-    gap: 10px; 
-    justify-content: center;
-    width: 180px; /* Largeur contenue pour les contrôles */
+    margin-top: 15px; display: grid; 
+    grid-template-columns: repeat(3, 1fr); gap: 10px; width: 160px;
 }
-
 .d-btn { 
-    background: white; border: 2px solid var(--maze-wall); border-radius: 12px; 
-    font-size: 1.5rem; height: 50px; width: 50px;
-    display: flex; align-items: center; justify-content: center; 
-    color: var(--maze-wall); touch-action: manipulation; cursor: pointer; 
-    user-select: none;
-    margin: 0 auto; /* Centrage dans la grille */
+    background: white; border: 2px solid var(--maze-wall); border-radius: 10px; 
+    font-size: 1.2rem; height: 45px; display: flex; align-items: center; 
+    justify-content: center; color: var(--maze-wall); cursor: pointer;
 }
 
-#scene-container {
-    width: 100%; height: 100%; border: none; border-radius: 10px;
-    display: none; position: absolute; top:0; left:0; z-index: 20;
+/* --- LA LETTRE (FIX VERTICAL) --- */
+#letter {
+    display: none; 
+    flex-direction: column !important; /* Force l'alignement de haut en bas */
+    background: #fffdf9; color: #2c1a1d; padding: 25px;
+    border-radius: 2px; width: 90%; max-width: 400px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.7);
+    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;
+    text-align: left; border-left: 5px solid var(--rose-petal);
+    z-index: 120; max-height: 75vh; overflow-y: auto;
 }
+#letter p { display: block; width: 100%; margin-bottom: 15px; }
 
-.restart-btn {
-    display: block; margin: 15px auto 0; padding: 8px 20px;
-    background: transparent; color: var(--rose-petal); border: 1px solid var(--rose-petal);
-    border-radius: 20px; font-size: 0.7rem; text-transform: uppercase;
+.page {
+    position: absolute; width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; transition: all 0.8s ease; pointer-events: none;
 }
+.page.active { opacity: 1; pointer-events: all; }
 
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-/* --- MEDIA QUERIES MOBILE (Le Cœur du Fix) --- */
-@media (max-width: 600px) {
-
-    h1 { font-size: 2rem !important; }
-
-    .nav-btn, .close-letter, .restart-btn {
-        padding: 12px 25px !important;
-        font-size: 0.9rem !important;
-    }
-
-    #letter { width: 95% !important; font-size: 1.1rem !important; padding: 20px !important; }
-
-    .candles-row { flex-wrap: wrap; gap: 15px; }
-
-    /* FIX LABYRINTHE MOBILE */
-    #game-board {
-        width: 95vw; /* Prend presque toute la largeur de l'écran */
-        padding: 3px;
-    }
-    
-    .cell {
-        width: auto !important;   /* Annule la taille fixe */
-        height: auto !important;  /* Annule la taille fixe */
-        aspect-ratio: 1 / 1;      /* Garde les cellules parfaitement carrées */
-        font-size: 12px;          /* Réduit la taille du cœur du joueur */
-    }
-
-    .maze-controls { 
-        display: grid !important; 
-        margin-top: 10px;
-        transform: scale(0.9); /* Légère réduction pour que tout rentre */
-    }
-    
-    /* Ajustement de la page pour éviter le scroll vertical */
-    #p-maze {
-        justify-content: flex-start;
-        padding-top: 15vh;
-    }
-    
-    .maze-title {
-        font-size: 1.2rem;
-        margin: 0 0 10px 0;
-    }
+@media (min-width: 600px) {
+    #game-board { width: 400px; }
+    .maze-controls { display: none !important; }
 }
-
-/* FIX OVERLAP PETITS ÉCRANS */
-@media (max-height: 700px) {
-    #p4 { padding-bottom: 20px; justify-content: flex-start; padding-top: 60px; }
-    #final-icon { font-size: 50px !important; margin: 5px 0 !important; }
-    h1 { font-size: 1.8rem !important; }
-}
-

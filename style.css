@@ -83,7 +83,7 @@ h1 {
 /* --- BOUTONS --- */
 .nav-btn {
     position: relative;
-    z-index: 200; /* IMPORTANT: Augmenté pour être au-dessus du canvas */
+    z-index: 200; 
     background: var(--glass);
     backdrop-filter: blur(5px);
     color: var(--text-gold);
@@ -128,15 +128,38 @@ h1 {
     text-align:center; opacity:0; transition:2s; color:#fff; width:90%; pointer-events: none;
 }
 
-/* --- LETTRE --- */
+/* --- LETTRE (CORRIGÉE) --- */
 #letter {
-    display: none; background: #fffdf9; color: #2c1a1d; padding: 35px;
-    border-radius: 2px; width: 90%; max-width: 400px; box-shadow: 0 15px 50px rgba(0,0,0,0.7);
-    font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; text-align: left;
-    border-left: 5px solid var(--rose-petal); z-index: 120;
-    transform-origin: top center;
+    display: none;
+    /* Position fixe pour passer par dessus tout */
+    position: fixed; 
+    /* Centrage horizontal et vertical (avec marge haute) */
+    top: 10%; 
+    left: 0; 
+    right: 0;
     margin: 0 auto;
+    
+    background: #fffdf9; 
+    color: #2c1a1d; 
+    padding: 35px;
+    border-radius: 2px; 
+    width: 90%; 
+    max-width: 400px; 
+    /* Scroll si l'écran est trop petit en hauteur */
+    max-height: 80vh; 
+    overflow-y: auto;
+    
+    box-shadow: 0 15px 50px rgba(0,0,0,0.9);
+    font-family: 'Cormorant Garamond', serif; 
+    font-size: 1.3rem; 
+    text-align: left;
+    border-left: 5px solid var(--rose-petal); 
+    
+    /* Très haut z-index pour cacher les bougies et le reste */
+    z-index: 1000; 
+    transform-origin: top center;
 }
+
 .unfold-animation { animation: unfold 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 @keyframes unfold { 0% { transform: scaleY(0.1); opacity: 0; } 100% { transform: scaleY(1); opacity: 1; } }
 
@@ -166,7 +189,7 @@ h1 {
 /* --- GRATTAGE --- */
 #scratch-container {
     position: relative; width: 280px; height: 150px; margin: 20px auto;
-    border-radius: 10px; overflow: hidden; display: block; /* S'assurer qu'il prend de la place */
+    border-radius: 10px; overflow: hidden; display: block;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     background: #fff;
     z-index: 15;
@@ -227,22 +250,19 @@ h1 {
 /* --- FIX MOBILE PAGE 4 --- */
 @media (max-width: 600px) {
     #p4 {
-        justify-content: flex-start; /* Aligne le contenu en haut */
-        padding-top: 15vh; /* Pousse un peu vers le bas */
+        justify-content: flex-start; 
+        padding-top: 15vh; 
         padding-bottom: 0;
     }
     .p4-content {
         display: flex;
         flex-direction: column;
         align-items: center;
-        /* Assure que le contenu ne descend pas trop bas */
         width: 100%;
     }
     #letter-btn {
-        margin-bottom: 100px; /* Force un espace vide sous le bouton pour les bougies */
+        margin-bottom: 100px; 
     }
-    
-    /* On cache l'icône si la lettre est ouverte pour gagner de la place */
     #letter[style*="block"] ~ #final-icon {
         display: none;
     }

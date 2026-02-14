@@ -122,6 +122,7 @@ function handleCandle(el) {
 // --- LETTRE ---
 function openLetter() {
     document.getElementById('candles-area').style.opacity = '0';
+    document.getElementById('candles-area').style.pointerEvents = 'none';
     document.getElementById('letter-btn').style.display = 'none';
     document.getElementById('final-icon').style.display = 'none';
     
@@ -146,6 +147,7 @@ function closeLetter() {
         const offCount = document.querySelectorAll('.candle.off').length;
         if (offCount < 3) {
             document.getElementById('candles-area').style.opacity = '1';
+            document.getElementById('candles-area').style.pointerEvents = 'all';
         }
     }, 800);
 }
@@ -509,4 +511,5 @@ function restartExperience() {
     document.getElementById('maze-game-wrapper').style.display = 'block';
     const iframe = document.getElementById('scene-container');
     if (iframe) iframe.remove();
+
 }

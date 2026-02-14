@@ -223,6 +223,12 @@ h1 {
     z-index: 10;
 }
 
+/* AJOUT : On remonte tout le contenu de la page 4 pour laisser de la place aux bougies */
+#p4 {
+    justify-content: center;
+    padding-bottom: 15vh; /* Pousse le contenu vers le haut */
+}
+
 .page.active {
     opacity: 1;
     transform: translateY(0);
@@ -388,4 +394,27 @@ h2.maze-title {
     .cell { width: 35px; height: 35px; }
     .maze-controls { display: none; }
     .player { font-size: 18px; }
+}
+
+/* --- AJUSTEMENTS MOBILES --- */
+@media (max-width: 600px) {
+    #p4 h1 {
+        font-size: 2.5rem !important; /* Un peu plus petit pour que ça tienne mieux */
+        margin-top: -50px; /* Remonte le titre */
+    }
+    
+    #final-icon {
+        font-size: 50px !important;
+        margin: 5px 0 !important;
+    }
+
+    #letter-btn {
+        margin-top: 10px !important;
+        transform: translateY(-20px); /* Remonte le bouton précisément */
+    }
+    
+    /* On s'assure que les bougies ne montent pas trop haut */
+    .candle-container {
+        bottom: 5vh !important;
+    }
 }

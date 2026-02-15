@@ -26,33 +26,64 @@ async function initMicrophone() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioContext = new AudioContext();
+        
+        // AJOUT : Forcer le démarrage si c'est suspendu
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+
         analyser = audioContext.createAnalyser();
+        // Le reste ne change pas...
         audioContext.createMediaStreamSource(stream).connect(analyser);
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         detectBlow();
     } catch(e) {
-        console.log("Micro non dispo ou refusé");
+        console.error("Erreur Micro :", e); // Affiche l'erreur exacte
+        alert("Active le micro pour souffler les bougies ! 🎤"); // Prévient l'utilisateur
     }
 }
 
 function detectBlow() {
-    if (!listeningToBlow) return requestAnimationFrame(detectBlow);
-    if (!analyser || !dataArray) return requestAnimationFrame(detectBlow);
+    if (!listeningToBlow || !analyser || !dataArray) {
+        return requestAnimationFrame(detectBlow);
+    }
 
     analyser.getByteFrequencyData(dataArray);
-    let avg = dataArray.reduce((a, b) => a + b) / dataArray.length;
+    
+    // --- FILTRAGE AVANCÉ ---
+    // On ignore les fréquences de 0 à 40 (Bruit de manipulation, frottements, moteur)
+    // Le souffle humain se situe plus haut dans le spectre.
+    let sum = 0;
+    let count = 0;
+    for(let i = 40; i < dataArray.length; i++) { 
+        sum += dataArray[i];
+        count++;
+    }
+    
+    let avg = sum / count;
 
+    // --- RÉGLAGES DE SENSIBILITÉ ---
+    // SEUIL_SOUFFLE : Monte à 80 ou 90 si c'est encore trop sensible.
+    const SEUIL_SOUFFLE = 0; 
+    
     const flames = document.querySelectorAll('.candle:not(.off) .flame');
+    
     flames.forEach(f => {
-        let intensity = Math.min(avg / 50, 1);
-        f.style.transform = `translateX(-50%) scale(${1 - intensity * 0.4})`;
+        // L'effet visuel ne s'active que si on dépasse un petit seuil
+        let visualIntensity = avg > 30 ? Math.min((avg - 30) / 70, 1) : 0;
+        f.style.transform = `translateX(-50%) scale(${1 - visualIntensity * 0.5})`;
     });
 
-    if (avg > 55) { // Seuil de détection du souffle
+    if (avg > SEUIL_SOUFFLE) { 
         const on = document.querySelectorAll('.candle:not(.off)');
         if (on.length > 0) {
-            handleCandle(on[Math.floor(Math.random()*on.length)]);
+            handleCandle(on[Math.floor(Math.random() * on.length)]);
+            
+            // On bloque la détection plus longtemps (800ms) pour éviter
+            // qu'un seul mouvement brusque n'éteigne TOUTES les bougies.
+            listeningToBlow = false;
+            setTimeout(() => { listeningToBlow = true; }, 800); 
         }
     }
     requestAnimationFrame(detectBlow);
@@ -122,7 +153,6 @@ function handleCandle(el) {
 // --- LETTRE ---
 function openLetter() {
     document.getElementById('candles-area').style.opacity = '0';
-    document.getElementById('candles-area').style.pointerEvents = 'none';
     document.getElementById('letter-btn').style.display = 'none';
     document.getElementById('final-icon').style.display = 'none';
     
@@ -147,7 +177,6 @@ function closeLetter() {
         const offCount = document.querySelectorAll('.candle.off').length;
         if (offCount < 3) {
             document.getElementById('candles-area').style.opacity = '1';
-            document.getElementById('candles-area').style.pointerEvents = 'all';
         }
     }, 800);
 }
@@ -513,3 +542,18 @@ function restartExperience() {
     if (iframe) iframe.remove();
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
